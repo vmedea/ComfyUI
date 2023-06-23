@@ -117,23 +117,25 @@ class ImagePalettize:
     CATEGORY = "image/postprocessing"
 
     def palettize(self, image, palette, max_k, method):
+        k = None
+        pal_img = None
+        if palette not in {'auto_best_k', 'auto_fixed_k'}:
+            pal_entries = load_palette(palette)
+            k = len(pal_entries) // 3
+            pal_img = Image.new('P', (1, 1)) # image size doesn't matter it only holds the palette
+            pal_img.putpalette(pal_entries)
+
         results = []
+
         for i in image:
             i = 255. * i.cpu().numpy()
             i = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-
-            pal_img = None
 
             if palette == 'auto_best_k':
                 k = determine_best_k(i, max_k)
                 print(f'Auto number of colors: {k}')
             elif palette == 'auto_fixed_k':
                 k = max_k
-            else:
-                palette = load_palette(palette)
-                k = len(palette) // 3
-                pal_img = Image.new('P', (1, 1)) # image size doesn't matter it only holds the palette
-                pal_img.putpalette(palette)
 
             i = i.quantize(colors=k, method=QUANTIZE_METHODS[method], kmeans=k, dither=0, palette=pal_img)
             i = i.convert('RGB')
