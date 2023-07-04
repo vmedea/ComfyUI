@@ -5,7 +5,7 @@ import { app } from "../../scripts/app.js";
 app.registerExtension({
 	name: "Comfy.UploadImage",
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
-		if (nodeData.name === "LoadImage" || nodeData.name === "LoadImageMask") {
+		if (nodeData.name === "LoadImage" || nodeData.name === "LoadImageMask" || nodeData.name === "LoadImageMasks") {
 			nodeData.input.required.upload = ["IMAGEUPLOAD"];
 		}
 	},
